@@ -1,5 +1,7 @@
 // @flow
 
+// YC-HOOK: Young Creators setup (network guard, mode) must run before any other import.
+import './YoungCreators/install';
 import 'element-closest';
 // $FlowFixMe[missing-export]
 import React, { Component, type Element } from 'react';
@@ -32,8 +34,9 @@ global.process = global.process || {
 };
 
 // Use the user preferred theme to define the loading screen color.
-document.getElementsByTagName('body')[0].style.backgroundColor =
-  getThemeWindowBackgroundColor();
+document.getElementsByTagName(
+  'body'
+)[0].style.backgroundColor = getThemeWindowBackgroundColor();
 
 const styles = {
   loadingMessage: {

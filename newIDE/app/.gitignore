@@ -43,3 +43,6 @@ resources/preview_node_modules
 src/locales/_build
 src/locales/**/*.po
 src/locales/**/*.pot
+
+# YC-HOOK: Workbox copied locally by scripts/make-service-worker.js
+/public/workbox-v*/

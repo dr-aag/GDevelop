@@ -101,6 +101,28 @@ const buildSW = () => {
         shell.exit(1);
       }
 
+      // YC-HOOK: serve Workbox from our own host instead of Google's CDN
+      // (no third-party requests; see newIDE/app/src/YoungCreators/).
+      return workboxBuild
+        .copyWorkboxLibraries(buildPath)
+        .then(workboxDirName => {
+          const swFile = '../public/service-worker.js';
+          const content = fs
+            .readFileSync(swFile, 'utf8')
+            .replace(
+              /importScripts\(\s*'https:\/\/storage\.googleapis\.com\/workbox-cdn\/releases\/[^']+\/workbox-sw\.js'\s*\);/,
+              `importScripts('./${workboxDirName}/workbox-sw.js');\nworkbox.setConfig({ modulePathPrefix: './${workboxDirName}/' });`
+            );
+          if (content.includes('storage.googleapis.com')) {
+            console.error('Error: the service worker still references a CDN.');
+            shell.exit(1);
+          }
+          fs.writeFileSync(swFile, content);
+          console.log(`ℹ️ Workbox served locally from ${workboxDirName}.`);
+          return { count, size, warnings };
+        });
+    })
+    .then(({ count, size, warnings }) => {
       // Optionally, log any warnings and details.
       warnings.forEach(warning => {
         console.log(`⚠️ workbox warning: ${warning}`);

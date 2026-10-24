@@ -1,6 +1,7 @@
 // @flow
 import Window from '../Utils/Window';
 import { getIDEVersionWithHash } from '../Version';
+import { shouldDisableUpstreamTelemetry } from '../YoungCreators/bootstrap'; // YC-HOOK
 
 type FileSet =
   | 'preview'
@@ -61,6 +62,9 @@ export const findGDJS = (
           // not running a local server.
           `${window.location.origin}/GDJS`;
   }
+  // YC-HOOK: always use the game engine bundled with our build (no CDN).
+  if (shouldDisableUpstreamTelemetry())
+    gdjsRoot = `${window.location.origin}/GDJS`;
 
   return Promise.all(
     filesToDownload[fileSet].map(relativeFilePath => {

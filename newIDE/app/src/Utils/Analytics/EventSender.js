@@ -23,6 +23,7 @@ import {
 import { retryIfFailed } from '../RetryIfFailed';
 import { type NewProjectCreationSource } from '../../ProjectCreation/NewProjectSetupDialog';
 import { isServiceWorkerSupported } from '../../ServiceWorkerSetup';
+import { shouldDisableUpstreamTelemetry } from '../../YoungCreators/bootstrap'; // YC-HOOK
 const electron = optionalRequire('electron');
 
 const isElectronApp = !!electron;
@@ -71,6 +72,8 @@ let gdevelopEditorAnalytics: {|
 let gdevelopEditorAnalyticsPromise: Promise<void> | null = null;
 
 const ensureGDevelopEditorAnalyticsReady = async () => {
+  // YC-HOOK: no remote analytics module in Young Creators.
+  if (shouldDisableUpstreamTelemetry()) return;
   if (gdevelopEditorAnalytics) {
     // Already loaded.
     return;
@@ -182,6 +185,8 @@ const recordEvent = (
     // console.log(`Should have sent analytics event "${name}"`, metadata);
     return;
   }
+  // YC-HOOK: no third-party analytics in Young Creators.
+  if (shouldDisableUpstreamTelemetry()) return;
 
   (() => {
     if (!posthogLoaded || !userIdentified) {
@@ -241,6 +246,8 @@ export const installAnalyticsEvents = () => {
     console.info('Development build - Analytics disabled');
     return;
   }
+  // YC-HOOK: no third-party analytics in Young Creators.
+  if (shouldDisableUpstreamTelemetry()) return;
 
   ensureGDevelopEditorAnalyticsReady().catch(() => {
     // Will be retried when an event is sent.

@@ -21,6 +21,7 @@ import {
 } from '../../../Utils/GDevelopServices/Usage';
 import AuthenticatedUserContext from '../../../Profile/AuthenticatedUserContext';
 import { isNativeMobileApp } from '../../../Utils/Platform';
+import { isHomeTabHidden } from '../../../YoungCreators/modes'; // YC-HOOK
 
 export const styles = {
   // Ensure it's always interactive, even when another iframe disable pointer events.
@@ -126,7 +127,9 @@ export const getTabsToDisplay = ({
     displayShopTab ? 'shop' : null,
     displayTeachTab ? 'team-view' : null,
   ].filter(Boolean);
-  return tabs.map(tab => homePageMenuTabs[tab]);
+  // YC-HOOK: age modes hide home panels (see YoungCreators/modes.js).
+  const visibleTabs = tabs.filter(tab => !isHomeTabHidden(tab));
+  return visibleTabs.map(tab => homePageMenuTabs[tab]);
 };
 
 type Props = {|

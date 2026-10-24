@@ -15,6 +15,7 @@ import { delay } from '../../../../Utils/Delay';
 import { useStableUpToDateRef } from '../../../../Utils/UseStableUpToDateCallback';
 import { useSoftKeyboardBottomOffset } from '../../../../UI/MobileSoftKeyboard';
 import { homepageMobileMenuHeight } from '../HomePageMenuBar';
+import { shouldDisableUpstreamTelemetry } from '../../../../YoungCreators/bootstrap'; // YC-HOOK
 const electron = optionalRequire('electron');
 
 // If the iframe is displaying a game, it will continue playing its audio as long as the iframe
@@ -28,6 +29,8 @@ let gdevelopGamesMonetization: {|
 let gdevelopGamesMonetizationPromise: Promise<void> | null = null;
 
 const ensureGDevelopGamesMonetizationReady = async () => {
+  // YC-HOOK: no remote monetization or ad scripts in Young Creators.
+  if (shouldDisableUpstreamTelemetry()) return;
   if (!!electron || isNativeMobileApp()) {
     // Not supported on desktop or mobile.
     return;
